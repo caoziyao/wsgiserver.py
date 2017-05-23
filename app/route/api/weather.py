@@ -1,7 +1,5 @@
-
-
+import pywframe.yrequests as yrequests
 from . import *
-import lib.yrequests as yrequests
 
 
 def weather(request):

@@ -2,12 +2,13 @@
 
 import socket
 import _thread
-from util import log, error
-from models.request import Request
-from route.todo import route_todo
-from route.zhihu import route_zhihu, route_static
-from route.api.weather import route_api
-from route.login import route_ajax
+from app.util import log, error
+from app.models.request import Request
+from app.route.todo import route_todo
+from app.route.zhihu import route_zhihu, route_static
+from app.route.api.weather import route_api
+from app.route.login import route_ajax
+from pywframe.routing import Map, register_url    # pywframe
 
 port = 8081
 host = ''  # '' 代表接收任意 ip
@@ -16,7 +17,6 @@ class Server():
     """
     服务端
     """
-
     def __init__(self, host='', port=5000):
         try:
             addr = (host, port)
@@ -34,23 +34,30 @@ class Server():
     def close(self):
         self.socket.close()
 
+def index(request, code=200):
+    header = 'HTTP/1.1 {} OK\r\nContent-Type: text/html; text/css; charset=UTF-8\r\n'.format(code)
+    body = 'hello'
+    return header + '\r\n' + body
 
 
 def response_for_path(path, request):
     """根据 path 回应客户端"""
     # static?file=zhihu.js
     r = {
+        '/': index,
         '/static': route_static,
     }
-    r.update(route_todo)
-    r.update(route_api)
-    r.update(route_zhihu)
-    r.update(route_ajax)
+    # r.update(route_todo)
+    # r.update(route_api)
+    # r.update(route_zhihu)
+    # r.update(route_ajax)
     """
     根据 path 调用相应的处理函数
     没有处理的 path 会返回 404
     """
-    response = r.get(path, error)
+    Map.update(r)
+    register_url(route_todo)
+    response = Map.get(path, error)
     return response(request)
 
 
@@ -88,19 +95,21 @@ def parsed_request(r):
     """第一步解析整个请求
     返回 method header body
     """
-    request = Request()
-    request.method = r.split()[0]
-    request.url = r.split()[1]
-    request.protocol = r.split()[2]
-    headers = r.split('\r\n\r\n', 1)[0].split('\r\n')[1:]
-    request.body = r.split('\r\n\r\n', 1)[1]
-    request.headers = parsed_headers(headers)
+    print('brefoerequest')
+    request = Request(r)
+    # request.method = r.split()[0]
+    # request.url = r.split()[1]
+    # request.protocol = r.split()[2]
+    # headers = r.split('\r\n\r\n', 1)[0].split('\r\n')[1:]
+    # request.body = r.split('\r\n\r\n', 1)[1]
+    # request.headers = parsed_headers(headers)
     # 解析出 cookie
+    print('ur', request.url)
     request.add_cookies()
     # log(request.__dict__)
 
     # /static?file=zhihu.js&author=gua
-    request.path, request.query = parsed_url(request.url)
+    # request.path, request.query = parsed_url(request.url)
 
     # log('request 请求:\r\n{}'.format(r))
     return request
@@ -116,8 +125,11 @@ def process_request(connection):
         connection.close()
         return
 
+    # r 是客户端发送过来的数据
+
     request = parsed_request(r)
-    response = response_for_path(request.path, request)
+    path = request.path
+    response = response_for_path(path, request)
     connection.sendall(response.encode(encoding='utf-8'))
 
     # print(response.encode(encoding='utf-8'))
@@ -125,7 +137,7 @@ def process_request(connection):
 
 
 
-def run(host='', port=3001, debug=False):
+def run(host='', port=3000, debug=False):
     """
     启动服务器
     """
@@ -136,8 +148,8 @@ def run(host='', port=3001, debug=False):
         log('connection from {}'.format(addr))
         # 开一个新的线程来处理请求, 第二个参数是传给新函数的参数列表, 必须是 tuple
         # tuple 如果只有一个值 必须带逗号
-        _thread.start_new_thread(process_request, (connection,))
-
+        # _thread.start_new_thread(process_request, (connection,))
+        process_request(connection)
 
 if __name__ == '__main__':
     config = dict(
