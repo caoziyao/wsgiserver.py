@@ -1,7 +1,13 @@
 # coding: utf-8
 
+import datetime
+import os
+
 # Python 延迟初始化（lazy property）
 # 延迟初始化主要用于提高性能，避免浪费计算，并减少程序的内存需求。
+# 只在第一次调用时候被计算之后就把结果缓存起来了。这样的好处是在网络编程中，对HTTP协议的解析，
+# 通常会把HTTP的header解析成python的一个字典，而在视图函数的时候，可能不知一次的访问这个header，
+# 因此把这个header使用描述器缓存起来，可以减少多余的解析
 class lazy_property(object):
     """
     Descriptor implementing a "lazy property", i.e. the function
@@ -22,13 +28,16 @@ class lazy_property(object):
         """
         if obj is None:
             return self
-        # print(obj) <app.models.request.Request object at 0x105dd2c50>
         value = self.func(obj)
-        # print('value', obj, value)   # <app.models.request.Request object at 0x10dfd3b38> /
-        # print('name', self.__name__)    # url
-        setattr(obj, self.__name__, value)
+        setattr(obj, self.__name__, value)  # 相当于 obj.__dict__[self.__name__] = value
         return value
 
+
+
+def log(*args, **kwargs):
+    """log 日志"""
+    dt = datetime.datetime.now()
+    print(dt, *args, **kwargs)
 
 
 

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block css %}
-    <link href="/static?file=index.css" rel="stylesheet"/>
+{#    <link href="/static?file=index.css" rel="stylesheet"/>#}
 {% endblock %}
 
 
@@ -29,7 +29,7 @@
 </style>
     <div id="header">
         <div>
-            <a href="/">知乎</a>
+            <a href="/">helo 知乎</a>
             <div>
                 <input placeholder="搜索你想要的">
                 <button>search</button>
@@ -47,7 +47,7 @@
             <button>提问</button>
 
             <!--<img src="">-->
-            <p>cczy</p>
+            <p>{{ name }}</p>
 
         </div>
     </div>
@@ -62,9 +62,9 @@
     </div>
 
 {% block script %}
-    <script src="/static?file=base.js"></script>
-    <script src="/static?file=base.js"></script>
-    <script src="/static?file=api.js"></script>
+{#    <script src="/static?file=base.js"></script>#}
+{#    <script src="/static?file=base.js"></script>#}
+{#    <script src="/static?file=api.js"></script>#}
     <!--<script src="/static?file=zhihu.js"></script>-->
 {% endblock %}
 
