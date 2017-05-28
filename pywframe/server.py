@@ -87,6 +87,7 @@ class Application():
         # register_url(route_todo)
         path = environ['PATH']
         response = Map.get(path, error)
+
         html = response(environ)
         response_body = html
         return [response_body]
@@ -102,6 +103,14 @@ class Server():
     def hander(self):
         pass
 
+    # 请求前, 执行预处理工作中:
+    def preprocess_request(self):
+        from app.main import app
+        for func in app.before_request_funcs:
+            rv = func()
+            if rv is not None:
+                return rv
+
 
     def get_environ(self, request):
         env = {}
@@ -115,7 +124,9 @@ class Server():
 
     @classmethod
     def start_response(cls, status, response_headers):
-        pass
+
+        # 请求前, 执行预处理工作中:
+        cls.preprocess_request(cls)
 
 
 class Request(BaseRequest):
