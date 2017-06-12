@@ -32,6 +32,19 @@ class BaseRequest(object):
         self.environ = environ
 
 
+    def get_cookies(self):
+        cookie = {}
+        headers = self.headers
+        cookies = headers.get('Cookie', '')
+        kvs = cookies.split('; ')
+        for kv in kvs:
+            if '=' in kv:
+                k, v = kv.split('=')
+                cookie[k] = v
+        return cookie
+
+    cookie = lazy_property(get_cookies)
+
     def body(self):
         self._body = self.environ.split('\r\n\r\n', 1)[1]
         return self._body
@@ -57,7 +70,9 @@ class BaseRequest(object):
         pass
 
     def form(self):
-        pass
+        _body = self.body()
+        return _body
+
 
     def values(self):
         pass

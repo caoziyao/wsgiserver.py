@@ -26,7 +26,7 @@ from pywframe.utils import log
 from pywframe.wrappers import BaseRequest
 from pywframe.routing import Map
 from pywframe.templates import render_tempalte
-
+from pywframe.session import session
 
 """
 WSGI server所做的工作：
@@ -88,7 +88,10 @@ class Application():
         path = environ['PATH']
         response = Map.get(path, error)
 
+        # 路由对应的函数
         html = response(environ)
+
+        # 返回值
         response_body = html
         return [response_body]
 
@@ -102,6 +105,7 @@ class Server():
 
     def hander(self):
         pass
+
 
     # 请求前, 执行预处理工作中:
     def preprocess_request(self):
@@ -118,6 +122,11 @@ class Server():
         env['REQUEST_METHOD'] = request.method
         env['QUERY_STRING'] = request.query
         env['PATH'] = request.path
+
+        # 自定义 env
+        env.setdefault('form', {}).update({})
+        env.setdefault('cookie', {}).update(request.cookie)
+
 
         return env
 
@@ -137,29 +146,37 @@ class Request(BaseRequest):
     def __init__(self, environ):
         super(Request, self).__init__(environ)
 
-    def add_cookies(self):
-        """
-        解析出 cookie
-        :param headersDict:
-        :return:
-        """
-        headers = self.headers
-        cookies = headers.get('Cookie', '')
-        kvs = cookies.split('; ')
-        for kv in kvs:
-            if '=' in kv:
-                k, v = kv.split('=')
-                self.Cookie[k] = v
+    # def add_cookies(self):
+    #     """
+    #     解析出 cookie
+    #     :param headersDict:
+    #     :return:
+    #     """
+    #     # headers = self.headers
+    #     # cookies = headers.get('Cookie', '')
+    #     # kvs = cookies.split('; ')
+    #     # for kv in kvs:
+    #     #     if '=' in kv:
+    #     #         k, v = kv.split('=')
+    #     #         self.Cookie[k] = v
+    #     pass
 
 
 def http_response(body, headers=None, code=200):
     """
     headers 是可选的字典格式的 HTTP 头
     """
+    from werkzeug.contrib.securecookie import SecureCookie
     header = 'HTTP/1.1 {} OK\r\nContent-Type: text/html; text/css; charset=UTF-8\r\n'.format(code)
     if headers is not None:
         header += ''.join(['{}: {}\r\n'.format(k, v)
                            for k, v in headers.items()])
+
+    if session:
+        # customer=huangxp; path=/foo; domain=.ibm.com;
+        for k, v in session.items():
+            s = '{}={};'.format(k, v)
+            header += 'Set-Cookie: {}\r\n'.format(s)
     return header + '\r\n' + body
 
 
@@ -210,7 +227,7 @@ def parsed_request(r):
     返回 method header body
     """
     request = Request(r)
-    request.add_cookies()
+    # request.add_cookies()
     return request
 
 
@@ -239,6 +256,7 @@ def process_request(connection):
         return
 
     # r 是客户端发送过来的数据
+    # request 解析后的数据
     request = parsed_request(r)
 
     # wsgi server

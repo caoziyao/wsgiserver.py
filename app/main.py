@@ -1,6 +1,6 @@
 # coding: utf-8
 
-
+from pywframe.session import session
 from pywframe.server import run_simple
 from pywframe.pywframe import PYWFrame
 from pywframe.templates import render_tempalte
@@ -16,14 +16,20 @@ def index(environ):
 
 @app.route('/hello')
 def index(environ):
-    return 'hello'
+    print('environ', environ)
+    session['123'] = 456
+
+    session['soo'] = 'viii'
+
+    s = ''
+    c = environ.get('cookie')
+    for k, data in environ.get('cookie'):
+        s += '{}={}'.format(k, data)
+
+    return 'hello ' + s
 
 
 
-@app.route('/<sid>')
-def index_with(environ, sid):
-    print('sid', sid)
-    return 'hello' + str(sid)
 
 
 @app.before_request
