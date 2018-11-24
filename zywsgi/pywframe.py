@@ -1,7 +1,7 @@
 # coding: utf-8
 
-from pywframe.routing import Map
-from pywframe.server import run_simple, route_static
+from zywsgi.routing import Map
+from zywsgi.server import run_simple, route_static
 
 class PYWFrame(object):
     """

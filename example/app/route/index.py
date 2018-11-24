@@ -1,7 +1,7 @@
 # coding: utf-8
 
 
-from pywframe.templates import render_tempalte
+from zywsgi.templates import render_tempalte
 
 def index(request):
     name = 'cxzy'

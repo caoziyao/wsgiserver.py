@@ -1,4 +1,4 @@
-import pywframe.yrequests as yrequests
+import zywsgi.yrequests as yrequests
 from . import *
 
 

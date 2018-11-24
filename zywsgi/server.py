@@ -18,15 +18,12 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import os
-import time
 import socket
-import wsgiref
-from pywframe.utils import log
-from pywframe.wrappers import BaseRequest
-from pywframe.routing import Map
-from pywframe.templates import render_tempalte
-from pywframe.session import session
+from zywsgi.utils import log
+from zywsgi.wrappers import BaseRequest
+from zywsgi.routing import Map
+from zywsgi.templates import render_tempalte
+from zywsgi.session import session
 
 """
 WSGI server所做的工作：
@@ -109,7 +106,7 @@ class Server():
 
     # 请求前, 执行预处理工作中:
     def preprocess_request(self):
-        from app.main import app
+        from example import app
         for func in app.before_request_funcs:
             rv = func()
             if rv is not None:
@@ -146,27 +143,12 @@ class Request(BaseRequest):
     def __init__(self, environ):
         super(Request, self).__init__(environ)
 
-    # def add_cookies(self):
-    #     """
-    #     解析出 cookie
-    #     :param headersDict:
-    #     :return:
-    #     """
-    #     # headers = self.headers
-    #     # cookies = headers.get('Cookie', '')
-    #     # kvs = cookies.split('; ')
-    #     # for kv in kvs:
-    #     #     if '=' in kv:
-    #     #         k, v = kv.split('=')
-    #     #         self.Cookie[k] = v
-    #     pass
-
 
 def http_response(body, headers=None, code=200):
     """
     headers 是可选的字典格式的 HTTP 头
     """
-    from werkzeug.contrib.securecookie import SecureCookie
+    # from werkzeug.contrib.securecookie import SecureCookie
     header = 'HTTP/1.1 {} OK\r\nContent-Type: text/html; text/css; charset=UTF-8\r\n'.format(code)
     if headers is not None:
         header += ''.join(['{}: {}\r\n'.format(k, v)

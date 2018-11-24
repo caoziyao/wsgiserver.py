@@ -1,6 +1,6 @@
 import time, os, json
 import datetime
-from pywframe.templates import render_tempalte
+from zywsgi.templates import render_tempalte
 
 
 def log(*args, **kwargs):

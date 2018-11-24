@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from pywframe.server import run_simple
-from pywframe.pywframe import PYWFrame
-from pywframe.templates import render_tempalte
+from zywsgi.server import run_simple
+from zywsgi.pywframe import PYWFrame
+from zywsgi.templates import render_tempalte
 
 app = PYWFrame(__name__)
 

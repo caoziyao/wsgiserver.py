@@ -22,7 +22,7 @@ Accept-Language: zh-CN,zh;q=0.8
 """
 
 
-from pywframe.utils import lazy_property
+from zywsgi.utils import lazy_property
 
 class BaseRequest(object):
     """
