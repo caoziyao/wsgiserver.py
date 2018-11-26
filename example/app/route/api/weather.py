@@ -1,4 +1,4 @@
-import zywsgi.yrequests as yrequests
+import zywsgi as yrequests
 from . import *
 
 

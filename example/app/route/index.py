@@ -1,7 +1,7 @@
 # coding: utf-8
 
 
-from zywsgi.templates import render_tempalte
+from example.old.templates import render_tempalte
 
 def index(request):
     name = 'cxzy'

@@ -3,11 +3,11 @@
 
 
 import socket
-from zywsgi.utils import log
-from zywsgi.wrappers import BaseRequest
-from zywsgi.routing import Map
-from zywsgi.templates import render_tempalte
-from zywsgi.session import session
+from example.old import log
+from example.old import BaseRequest
+from example.old import Map
+from example.old.templates import render_tempalte
+from example.old import session
 
 """
 WSGI server所做的工作：

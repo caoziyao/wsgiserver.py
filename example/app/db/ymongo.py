@@ -1,7 +1,7 @@
 # 启动 mongod --config /usr/local/etc/mongod.conf
 import os
 from pymongo import MongoClient
-from app.util import json_loads
+from zyapp.app import json_loads
 
 # 引入数据库配置文件
 config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, 'constant', 'config.txt'))

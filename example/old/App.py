@@ -1,7 +1,7 @@
 # coding: utf-8
 
-from zywsgi.routing import Map
-from zywsgi.server import run_simple, route_static
+from example.old import Map
+from example.old.server import route_static
 
 
 class App(object):

@@ -7,10 +7,9 @@
 @desc:
 """
 
-from zywsgi.App import App
+from zyapp.app import App
 
 app = App(__name__)
-
 
 @app.route("/")
 def hello():

@@ -1,6 +1,5 @@
-import time, os, json
+import os, json
 import datetime
-from zywsgi.templates import render_tempalte
 
 
 def log(*args, **kwargs):

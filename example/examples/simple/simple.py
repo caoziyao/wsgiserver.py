@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from zywsgi.server import run_simple
-from zywsgi.App import App
-from zywsgi.templates import render_tempalte
+from example.old.server import run_simple
+from zywsgi import App
+from example.old.templates import render_tempalte
 
 app = App(__name__)
 
