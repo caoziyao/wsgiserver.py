@@ -7,3 +7,15 @@
 @desc:
 """
 
+from zywsgi.App import App
+
+app = App(__name__)
+
+
+@app.route("/")
+def hello():
+    return "Hello World!"
+
+
+if __name__ == "__main__":
+    app.run()

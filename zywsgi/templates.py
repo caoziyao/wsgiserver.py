@@ -1,19 +1,7 @@
 # coding: utf-8
-"""
-    pywframe.templates
-    ~~~~~~~~~~~~~~~~~~
-
-    A very simple Python "Template Engine". In fact it just recognizes
-    PHP like blocks and executes the code in them::
-
-        t = Template('<% for u in users %>${u['username']}\n<% endfor %>')
-        t.render(users=[{'username': 'John'},
-                        {'username': 'Jane'}])
-"""
 
 import os
 from jinja2 import Environment, FileSystemLoader
-
 
 # __file__ 指的是本文件的名字
 # 得到用于加载模板的目录

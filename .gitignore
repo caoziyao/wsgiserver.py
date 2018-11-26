@@ -1,4 +1,6 @@
 .idea/*
+todo2.md
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -101,3 +103,4 @@ ENV/
 
 # mypy
 .mypy_cache/
+TODO.md

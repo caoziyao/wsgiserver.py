@@ -3,9 +3,10 @@
 from zywsgi.routing import Map
 from zywsgi.server import run_simple, route_static
 
-class PYWFrame(object):
+
+class App(object):
     """
-    app = PYWFrame(__name__)
+    app = App(__name__)
 
     @app.route('/')
     def index(environ):
@@ -17,7 +18,6 @@ class PYWFrame(object):
         print('name', name)
         self.before_request_funcs = []
 
-
     def regist_route(self, path, func):
         num = path.split('/<')
 
@@ -26,7 +26,6 @@ class PYWFrame(object):
             '/static': route_static,
         }
         Map.update(r)
-
 
     def route(self, path):
         """
@@ -42,9 +41,10 @@ class PYWFrame(object):
             def _wrapper(*args, **kwargs):
                 # ret = func(*args, **kwargs)    # 这里进行原函数的计算
                 return func
-            return _wrapper
-        return wrapper
 
+            return _wrapper
+
+        return wrapper
 
     def before_request(self, func):
         """
@@ -53,3 +53,6 @@ class PYWFrame(object):
                 do something
         """
         self.before_request_funcs.append(func)
+
+    def run(self):
+        pass

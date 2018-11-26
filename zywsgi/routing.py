@@ -10,6 +10,7 @@ Todo:
 """
 Map = {}
 
+
 def register_url(*args):
     """
     register url
@@ -28,5 +29,3 @@ def register_url(*args):
     """
     for item in args:
         Map.update(item)
-
-

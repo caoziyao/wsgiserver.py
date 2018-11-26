@@ -1,22 +1,6 @@
 # coding: utf-8
 # -*- coding: utf-8 -*-
-"""
-    pywframe.serving
-    ~~~~~~~~~~~~~~~~
 
-    This module wraps the `wsgiref` module so that it reloads code
-    automatically. Works with any WSGI application but it won't help in
-    non `wsgiref` environments. Use it only for development.
-
-    Usage::
-
-        from pywframe.serving import run_simple
-        from myproject import make_app
-        run_simple('localhost', 8080, make_app())
-
-    :copyright: 2017 by Armin Ronacher.
-    :license: BSD, see LICENSE for more details.
-"""
 
 import socket
 from zywsgi.utils import log
@@ -31,7 +15,6 @@ WSGI server所做的工作：
 2.然后将WSGI application的返回值作为响应传给客户端
 """
 
-
 # WSGI server
 """
 处理一个HTTP请求的逻辑:
@@ -40,6 +23,7 @@ for data in iterable:
    # send data to client
 """
 
+
 def error(code=404):
     body = render_tempalte('404.html')
     return body
@@ -47,12 +31,12 @@ def error(code=404):
 
 # 中间件（Middleware）
 class Middleware:
-   def __init__(self, app):
-      self.wrapped_app = app
+    def __init__(self, app):
+        self.wrapped_app = app
 
-   def __call__(self, environ, start_response):
-      for data in self.wrapped_app(environ, start_response):
-        yield data
+    def __call__(self, environ, start_response):
+        for data in self.wrapped_app(environ, start_response):
+            yield data
 
 
 class Application():
@@ -95,14 +79,11 @@ class Application():
 
 class Server():
 
-
     def get_application(self):
         pass
 
-
     def hander(self):
         pass
-
 
     # 请求前, 执行预处理工作中:
     def preprocess_request(self):
@@ -111,7 +92,6 @@ class Server():
             rv = func()
             if rv is not None:
                 return rv
-
 
     def get_environ(self, request):
         env = {}
@@ -124,9 +104,7 @@ class Server():
         env.setdefault('form', {}).update({})
         env.setdefault('cookie', {}).update(request.cookie)
 
-
         return env
-
 
     @classmethod
     def start_response(cls, status, response_headers):
@@ -213,7 +191,6 @@ def parsed_request(r):
     return request
 
 
-
 def redirect(location):
     """
     重定向
@@ -264,7 +241,6 @@ def run_simple(host='0.0.0.0', port=3000, debug=False):
     """
     hostname = host or '0.0.0.0'
     log('* Running on http://{}:{}/'.format(hostname, port))
-
 
     def inner():
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

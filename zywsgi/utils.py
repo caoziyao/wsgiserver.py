@@ -3,6 +3,7 @@
 import datetime
 import os
 
+
 # Python 延迟初始化（lazy property）
 # 延迟初始化主要用于提高性能，避免浪费计算，并减少程序的内存需求。
 # 只在第一次调用时候被计算之后就把结果缓存起来了。这样的好处是在网络编程中，对HTTP协议的解析，
@@ -33,12 +34,7 @@ class lazy_property(object):
         return value
 
 
-
 def log(*args, **kwargs):
     """log 日志"""
     dt = datetime.datetime.now()
     print(dt, *args, **kwargs)
-
-
-
-

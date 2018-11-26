@@ -2,10 +2,10 @@
 
 from zywsgi.session import session
 from zywsgi.server import run_simple
-from zywsgi.pywframe import PYWFrame
+from zywsgi.App import App
 from zywsgi.templates import render_tempalte
 
-app = PYWFrame(__name__)
+app = App(__name__)
 
 @app.route('/')
 def index(environ):

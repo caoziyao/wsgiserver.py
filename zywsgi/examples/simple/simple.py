@@ -1,10 +1,10 @@
 # coding: utf-8
 
 from zywsgi.server import run_simple
-from zywsgi.pywframe import PYWFrame
+from zywsgi.App import App
 from zywsgi.templates import render_tempalte
 
-app = PYWFrame(__name__)
+app = App(__name__)
 
 @app.route('/')
 def index(environ):
