@@ -6,7 +6,8 @@
 @time: 2018/11/26 
 @desc:
 """
-from zywsgi.serving import run_simple
+# from zywsgi.serving import run_simple
+from zywsgi.serving import BaseServer
 
 
 #
@@ -38,7 +39,15 @@ class App(object):
         self.import_name = import_name
 
     def run(self, host='0.0.0.0', port=5001):
-        run_simple(host, port, self)
+
+        def application(environ, start_response):
+            start_response('202 OK', [('Content-Type', 'text/html')])
+            return 'Hello a, web!'
+
+        httpd = BaseServer(host, port, application)
+        httpd.serve_forever()
+        # run_simple(host, port, application)
+
 
     def route(self, path):
         print('path', path)
