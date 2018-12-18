@@ -15,16 +15,15 @@ import socket
 from .http_parsed import BaseRequest
 
 
-# sel = selectors.DefaultSelector()
-# sock = socket.socket()
-
-
 class LevelApp(object):
 
-    def __init__(self, application=None):
+    def __init__(self, application):
         self.environ = None
-        self.application = application
         self.response = None
+
+        self.application = application
+        self.default_application = application.get('default')
+        self.static_application = application.get('static')
 
     def start_response(self, status, headers_list):
         """
@@ -39,79 +38,21 @@ class LevelApp(object):
 
         r += '\r\n'
 
-        self.response = r
-
-
-#
-#
-# def accept(sock, mask):
-#     conn, addr = sock.accept()  # Should be ready
-#     conn.setblocking(False)
-#     sel.register(conn, selectors.EVENT_READ, read)
-#
-#
-# def write(sock, mask):
-#     body = app.application(app.environ, app.start_response)
-#     app.response += body
-#     # r = 'HTTP/1.1 200 OK\r\nContent-Type: text/html;charset=ISO-8859-1\r\n\r\nhello'
-#     data = app.response.encode('ascii')
-#
-#     sock.send(data)
-#     sel.unregister(sock)
-#     sock.close()
-#
-#
-# def read(conn, mask):
-#     data = conn.recv(1000)  # Should be ready
-#     if data:
-#         conn.setblocking(False)
-#         sel.unregister(conn)
-#
-#         print('echoing', repr(data))
-#
-#         s = data.decode('utf-8')
-#         r = BaseRequest(s)
-#
-#         app.environ = r
-#
-#         sel.register(conn, selectors.EVENT_WRITE, write)
-#     else:
-#         print('closing', conn)
-#         sel.unregister(conn)
-#         conn.close()
-
-#
-# def run_simple(host, port, application):
-#     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-#
-#     sock.bind((host, port))
-#     sock.listen(100)
-#     sock.setblocking(False)
-#
-#     sel.register(sock, selectors.EVENT_READ, accept)
-#     app.application = application
-#
-#     try:
-#         while True:
-#             events = sel.select()
-#             for key, mask in events:
-#                 callback = key.data
-#                 callback(key.fileobj, mask)
-#     finally:
-#         print('close')
-#         sock.close()
-#         sel.close()
+        self.response = r.encode()
 
 
 class BaseServer(object):
 
     def __init__(self, host, port, application):
-        self.app = LevelApp()
+        self.app = LevelApp(application)
         self.selector = selectors.DefaultSelector()
         self.sock = socket.socket()
         self.address = (host, port)
         # self.application = application
-        self.app.application = application
+
+        self.request_queue_size = 5
+
+        self.open_socket()
 
     def accept(self, sock, mask):
         sel = self.selector
@@ -120,14 +61,35 @@ class BaseServer(object):
         conn.setblocking(False)
         sel.register(conn, selectors.EVENT_READ, self.read)
 
+    def application_from_url(self, url):
+        """
+
+        :param url:
+        :return:
+        """
+        app = self.app
+
+        # static
+        static = url[1:7]  # /static
+        if static == 'static':
+            b = app.static_application
+        else:
+            b = app.application.get(url, app.default_application)
+
+        return b
+
     def write(self, sock, mask):
         sel = self.selector
         app = self.app
+        r = app.environ
 
-        body = app.application(app.environ, app.start_response)
+        # application = app.application.get(r.url, app.default_application)
+        application = self.application_from_url(r.url)
+
+        body = application(app.environ, app.start_response)
         app.response += body
-        # r = 'HTTP/1.1 200 OK\r\nContent-Type: text/html;charset=ISO-8859-1\r\n\r\nhello'
-        data = app.response.encode('ascii')
+        # data = app.response.encode('ascii')
+        data = app.response
 
         sock.send(data)
         sel.unregister(sock)
@@ -155,19 +117,39 @@ class BaseServer(object):
             sel.unregister(conn)
             conn.close()
 
+    def server_close(self):
+
+        self.sock.close()
+        self.selector.close()
+
+    def server_bind(self):
+        """
+        绑定
+        """
+        sock = self.sock
+
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind(self.address)
+        self.server_address = sock.getsockname()
+
+    def server_listen(self):
+        """
+        监听
+        """
+        self.sock.listen(self.request_queue_size)
+
+    def open_socket(self):
+        sock = self.sock
+
+        self.server_bind()
+        self.server_listen()
+        sock.setblocking(False)
+
     def serve_forever(self):
         sock = self.sock
         sel = self.selector
 
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-        sock.bind(self.address)
-        sock.listen(100)
-        sock.setblocking(False)
-
         sel.register(sock, selectors.EVENT_READ, self.accept)
-        # app.application = application
-
         try:
             while True:
                 events = sel.select()
@@ -176,5 +158,4 @@ class BaseServer(object):
                     callback(key.fileobj, mask)
         finally:
             print('close')
-            sock.close()
-            sel.close()
+            self.server_close()

@@ -12,20 +12,21 @@ class BaseRequest(object):
     """
     base request class
     """
+
     def __init__(self, request):
         self.request = request
-        self._parsed_request(self.request)
+        self._parsed_request()
 
-    def _parsed_request(self, request):
+    def _parsed_request(self):
         """
         解析 request
         :param request:
         :return:
         """
-        self._parsed_header(request)
-        self._parsed_body(request)
+        self._parsed_header()
+        self._parsed_body()
 
-    def _parsed_header(self, request):
+    def _parsed_header(self):
         """
         解析 header
         :param request:
@@ -40,13 +41,13 @@ class BaseRequest(object):
 
         self.headers = query
 
-    def _parsed_body(self, request):
+    def _parsed_body(self):
         """
         解析body
         :param request:
         :return:
         """
-        self.body = request.split('\r\n\r\n', 1)[1]
+        self.body = self.request.split('\r\n\r\n', 1)[1]
 
     def get_cookies(self):
         cookie = {}
